@@ -1,5 +1,6 @@
 #include "Assign1.h"
 #include <vector>
+#include <map>
 
 typedef long long int lli;
 const int MOD = 1e9 + 7;
@@ -179,24 +180,14 @@ permutation const permutation::square_root() const // O(N) solution !
 }
 
 
-// int permutation::gcd(int a, int b) const {
-// 	if (a == 0)
-// 		return b;
-// 	return gcd(b % a, a);
-// }
+int permutation::gcd(int a, int b) const {
+	if (a == 0)
+		return b;
+	return gcd(b % a, a);
+}
 
-// int permutation::lcm(int a, int b) const {
-// 	return (a * b) / gcd(a, b);
-// }
-
-
-permutation const permutation::naivepower(long long int i) const //F
-{
-	permutation p3 = *this;
-	for (int j = 1; j < i; ++j)
-		p3 = p3 * (*this);
-
-	return p3;
+int permutation::lcm(int a, int b) const {
+	return (a * b) / gcd(a, b);
 }
 
 permutation const permutation::operator^(lli n) const //O(N) solution !
@@ -230,204 +221,203 @@ permutation const permutation::operator^(lli n) const //O(N) solution !
 	return ptrnew;
 }
 
-bool permutation::is_power(permutation const &q) const // O(N) !
+bool permutation::is_power(permutation const &q) const // 6s for 1e6 testcases n = 100
 {
-	bool visited[103];
-	int tempcycle[101];
-	vector<vector<int>> q_cycles(q.size(), vector<int>());
+	int *q_arr = q.to_array();
 
-	int* q_arr = q.to_array();
+	bool visited[103];
+	int temptemp[100];
+	vector<int> sizes(q.size(), -1);
 
 	for (int i = 0; i < 103; ++i)
 		visited[i] = false;
 
-	for (int i = 0; i < q.size(); ++i)
+	for (int i = 0; i < q.size(); ++i) // O(N)
 	{
 		if (!visited[i])
 		{
 			lli sz = 0, j = i;
 			do {
 				visited[j] = 1;
-				tempcycle[sz] = *(q_arr + j);
+				temptemp[sz] = *(q_arr + j);
 				++sz;
 				j = *(q_arr + j);
 			} while (j != i);
 
-			// I dont know why I didnt use a map here.
-			vector<int> temptemp;
-			for (int ind = 0; ind < sz; ++ind)
-				temptemp.push_back(tempcycle[ind]);
-
-			for (int loopind = 0; loopind < sz; ++loopind)
-				q_cycles[tempcycle[loopind]] = temptemp;
+			for (int k = 0; k < sz; ++k)
+				sizes[temptemp[k]] = sz;
 		}
 	}
 
-	bool flag = true;
-	for (int i = 0; i < this->len; ++i)
+	vector<int> szrem(q.size() + 1, -1); //size = len+1, default val = 101;
+	for (int i = 0; i < this->len; ++i) // O(N) ~ O(N^2)
 	{
 		bool internalflag = false;
-		int vectlen = q_cycles[*(this->perm + i)].size();
-		for (int j = 0; j < vectlen; ++j)
+		int start_cycle = i;
+		for (int j = 0; ; ++j)
 		{
-			if (q_cycles[*(this->perm + i)][j] == i)
+			if (start_cycle == *(this->perm + i))
 			{
+				if ((szrem[sizes[i]] != -1) && (szrem[sizes[i]] != j))
+				{
+					delete[] q_arr;
+					return false;
+				}
+				szrem[sizes[i]] = j;
 				internalflag = true;
 				break;
 			}
+
+			start_cycle = *(q_arr + start_cycle);
+			if (start_cycle == i)
+				break;
 		}
 		if (!internalflag)
 		{
-			flag = false;
-			break;
+			delete[] q_arr;
+			return false;
+		}
+
+	}
+
+	for (int i = 2; i <= q.size(); ++i) // O(nlgn)
+	{
+		int rem = szrem[i];
+		int counter;
+		if (rem != -1)
+		{
+			for (int j = 2; j < 100; ++j)
+			{
+				counter = j * i;
+				if (counter > q.size())
+					break;
+				if ((szrem[counter] != -1) && (szrem[counter] % i != rem))
+				{
+					delete[] q_arr;
+					return false;
+				}
+			}
 		}
 	}
+
 	delete[] q_arr;
-	return flag;
+	return true;
 }
 
 int permutation::log(permutation const &q) const
 {
+	int *q_arr = q.to_array();
+	lli log = 0;
 
+	bool visited[103];
+	int temptemp[100];
+	vector<int> sizes(q.size(), -1);
+
+	for (int i = 0; i < 103; ++i)
+		visited[i] = false;
+
+	for (int i = 0; i < q.size(); ++i) // O(N)
+	{
+		if (!visited[i])
+		{
+			lli sz = 0, j = i;
+			do {
+				visited[j] = 1;
+				temptemp[sz] = *(q_arr + j);
+				++sz;
+				j = *(q_arr + j);
+			} while (j != i);
+
+			for (int k = 0; k < sz; ++k)
+				sizes[temptemp[k]] = sz;
+		}
+	}
+
+	vector<int> szrem(q.size() + 1, -1); //size = len+1, default val = 101;
+	for (int i = 0; i < this->len; ++i) // O(N) ~ O(N^2)
+	{
+		bool internalflag = false;
+		int start_cycle = i;
+		for (int j = 0; ; ++j)
+		{
+			if (start_cycle == *(this->perm + i))
+			{
+				if ((szrem[sizes[i]] != -1) && (szrem[sizes[i]] != j))
+				{
+					delete[] q_arr;
+					return 0;
+				}
+				szrem[sizes[i]] = j;
+				internalflag = true;
+				break;
+			}
+
+			start_cycle = *(q_arr + start_cycle);
+			if (start_cycle == i)
+				break;
+		}
+		if (!internalflag)
+		{
+			delete[] q_arr;
+			return 0;
+		}
+	}
+
+	map<int, int> maxmultiple;
+	for (int i = 2; i <= q.size(); ++i) // O(nlgn)
+	{
+		int rem = szrem[i];
+		int counter = i;
+		int maxii = 0;
+		//cout << i << " " << rem << endl;
+		if (rem != -1)
+		{
+			for (int j = 1; j < 100; ++j)
+			{
+				counter = j * i;
+				if (counter > q.size())
+					break;
+				if ((szrem[counter] != -1) && (szrem[counter] % i != rem))
+				{
+					delete[] q_arr;
+					return 0;
+				}
+				if (szrem[counter] != -1)
+					maxii = max(maxii, counter);
+			}
+			maxmultiple[maxii] = szrem[maxii];
+		}
+	}
+
+	if (maxmultiple.size() == 1)
+	{
+		delete[] q_arr;
+		return maxmultiple.begin()->second;
+	}
+
+	map<int, int>::iterator itr;
+	lli quo = 1, remainder = 0;
+	//cout << "hamba : " << endl;
+	for (itr = maxmultiple.begin(); itr != maxmultiple.end(); ++itr)
+	{
+		//cout << itr->first << " : " << itr->second << endl;
+		lli oldquo = quo;
+		lli temp = 0;
+		quo = lcm(quo, itr->first);
+		if (oldquo == quo)
+			continue;
+
+		for (lli i = 0; temp < quo; ++i)
+		{
+			temp = i * oldquo + remainder;
+			if (temp % (itr->first) == itr->second)
+			{
+				remainder = temp;
+				break;
+			}
+		}
+	}
+
+	delete[] q_arr;
+	return remainder % MOD;
 }
-
-
-
-// permutation const permutation::operator^(long long int n) const // basic checked
-// {
-// 	bool visited[103];
-// 	for (int i = 0; i < 103; ++i)
-// 		visited[i] = false;
-
-// 	lli lcm_continuous = 1;
-// 	for (int i = 0; i < this->len; ++i)
-// 	{
-// 		if (!visited[i])
-// 		{
-// 			lli sz = 0, j = i;
-// 			do {
-// 				visited[j] = 1;
-// 				++sz;
-// 				j = *(this->perm + j);
-// 			} while (j != i);
-
-// 			lcm_continuous = lcm(lcm_continuous, sz);
-// 		}
-// 	}
-
-// 	long long int remainder = n % lcm_continuous;
-
-// 	int arrnew[this->len];
-// 	for (int i = 0; i < this->len; ++i)
-// 		arrnew[i] = i;
-
-// 	permutation p3(this->len, arrnew);
-// 	if (n == 0)
-// 		return p3;
-
-// 	p3 = p3 * (*this); //p^1
-// 	lli log2n = (lli)log2(n);
-// 	lli pow2 = 1;
-
-// 	for (lli i = 1; i <= log2n; ++i)
-// 	{
-// 		p3 = p3 * p3;
-// 		pow2 = pow2 * 2;
-// 	}
-
-// 	lli remainder = n - pow2;
-// 	for (int i = 1; i <= remainder; ++i)
-// 		p3 = p3 * (*this);
-
-// 	return p3;
-// }
-
-// bool permutation::naive_is_power(permutation const &q) const
-// {
-// 	bool visited[103];
-// 	for (int i = 0; i < 103; ++i)
-// 		visited[i] = false;
-
-// 	lli lcm_continuous = 1;
-// 	for (int i = 0; i < this->len; ++i)
-// 	{
-// 		if (!visited[i])
-// 		{
-// 			lli sz = 0, j = i;
-// 			do {
-// 				visited[j] = 1;
-// 				++sz;
-// 				j = *(this->perm + j);
-// 			} while (j != i);
-
-// 			lcm_continuous = lcm(lcm_continuous, sz);
-// 		}
-// 	}
-
-// 	int arrnew[this->len];
-// 	for (int i = 0; i < this->len; ++i)
-// 		arrnew[i] = i;
-
-// 	permutation p3(this->len, arrnew);
-// 	for (lli i = 0; i < lcm_continuous; ++i)
-// 	{
-// 		int counter = 0;
-// 		int* arrtemp = p3.to_array();
-// 		for (int j = 0; j < this->len; ++j)
-// 			if (*(arrtemp + j) != *(this->perm + j))
-// 				break;
-// 			else
-// 				counter++;
-// 		if (counter == this->len)
-// 			return true;
-// 		p3 = p3 * q;
-// 	}
-// 	return false;
-// }
-
-// int permutation::log(permutation const &q) const
-// {
-// 	bool visited[103];
-// 	for (int i = 0; i < 103; ++i)
-// 		visited[i] = false;
-
-// 	lli lcm_continuous = 1;
-// 	for (int i = 0; i < this->len; ++i)
-// 	{
-// 		if (!visited[i])
-// 		{
-// 			int sz = 0, j = i;
-// 			do {
-// 				visited[j] = 1;
-// 				++sz;
-// 				j = *(this->perm + j);
-// 			} while (j != i);
-
-// 			lcm_continuous = lcm(lcm_continuous, sz);
-// 		}
-// 	}
-
-// 	int arrnew[this->len];
-// 	for (int i = 0; i < this->len; ++i)
-// 		arrnew[i] = i;
-
-// 	permutation p3(this->len, arrnew);
-// 	bool flag = false;
-// 	for (lli i = 0; i < lcm_continuous; ++i)
-// 	{
-// 		lli counter = 0;
-// 		int* arrtemp = p3.to_array();
-// 		for (int j = 0; j < this->len; ++j)
-// 			if (*(arrtemp + j) != *(this->perm + j))
-// 				break;
-// 			else
-// 				counter++;
-// 		if (counter == this->len)
-// 		{
-// 			flag = true;
-// 			return i;
-// 		}
-// 		p3 = p3 * q;
-// 	}
-// 	return 0;
-// }
