@@ -372,7 +372,7 @@ int permutation::log(permutation const &q) const
 				if ((szrem[sizes[i]] != -1) && (szrem[sizes[i]] != j))
 				{
 					delete[] q_arr;
-					return 0;
+					return -1;
 				}
 				szrem[sizes[i]] = j;
 				internalflag = true;
@@ -386,7 +386,7 @@ int permutation::log(permutation const &q) const
 		if (!internalflag)
 		{
 			delete[] q_arr;
-			return 0;
+			return -1;
 		}
 	}
 
@@ -407,7 +407,7 @@ int permutation::log(permutation const &q) const
 				if ((szrem[counter] != -1) && (szrem[counter] % i != rem))
 				{
 					delete[] q_arr;
-					return 0;
+					return -1;
 				}
 				if (szrem[counter] != -1)
 					maxii = max(maxii, counter);
@@ -453,7 +453,7 @@ int permutation::log(permutation const &q) const
 		{
 			delete[] q_arr;
 			delete[] checker_arr;
-			return 0;
+			return -1;
 		}
 
 	delete[] q_arr;
