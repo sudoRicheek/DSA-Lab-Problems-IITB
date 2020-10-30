@@ -364,18 +364,17 @@ void subsidxthue(string& word)
 		if (smoldx == -1)
 			cout << -1 << endl;
 		else
-			cout << smallestdepth << " " << smoldx << endl;
+			cout << smallestdepth << " " << smoldx << "\n";
 	}
 	else
-		cout << -1 << endl;
+		cout << -1 << "\n";
 
 }
 
+// void subseqidxfibo(string& word)
+// {
 
-void subseqidxfibo(string& word)
-{
-
-}
+// }
 
 void solve()
 {
@@ -415,7 +414,7 @@ void solve()
 		{
 			lli idx;
 			cin >> idx;
-			if ((exponentialcase == true) || ((k >= 2) && (f[0] == "ab") && (f[1] == "a"))) {
+			if ((exponentialcase == true) || ((k == 2) && (f[0] == "ab") && (f[1] == "a"))) {
 				if (!lengthsieved)
 				{
 					lengthsieve(INF);
@@ -441,12 +440,12 @@ void solve()
 		{
 			string str;
 			cin >> str;
-			if ((k == 2) && (f[0] == "ab") && (f[1] == "a"))
-				subseqidxfibo(str);
-			// else if ((k == 2) && (f[0] == "ab") && (f[1] == "ba"))
-			// 	subseqidxthue(str);
-			else
-				cout << -1 << endl;
+			// if ((k == 2) && (f[0] == "ab") && (f[1] == "a"))
+			// 	subseqidxfibo(str);
+			// // else if ((k == 2) && (f[0] == "ab") && (f[1] == "ba"))
+			// // 	subseqidxthue(str);
+			// else
+			cout << -1 << endl;
 			// smallest n such that its a subsequence
 		}
 	}
