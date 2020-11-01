@@ -21,6 +21,7 @@ int main(int argc, char const *argv[])
 	// qq.intersect(qq1);
 	qq.complement();
 	qq.set(0, 0, 3, 3, 0);
+	qq.set(2, 3, 7, 6, 1);
 
 	// cout << qq.get(1, 1) << endl;
 	for (int i = 0; i < (1 << n); ++i) {
@@ -29,12 +30,12 @@ int main(int argc, char const *argv[])
 		cout << endl;
 	}
 	// cout << qq.countones() << endl;
-	qq.resize(2);
-	for (int i = 0; i < (1 << 2); ++i) {
-		for (int j = 0; j < (1 << 2); ++j)
-			cout << qq.get(i, j) << " " << flush;
-		cout << endl;
-	}
+	// qq.resize(2);
+	// for (int i = 0; i < (1 << 2); ++i) {
+	// 	for (int j = 0; j < (1 << 2); ++j)
+	// 		cout << qq.get(i, j) << " " << flush;
+	// 	cout << endl;
+	// }
 
 	return 0;
 }

@@ -10,6 +10,7 @@
 
 class quad_tree
 {
+public:
 	// size of matrix
 	int sizen;
 
@@ -26,7 +27,7 @@ class quad_tree
 
 	int countones() const;
 	// void deleteTree(quad_tree *quad);
-public:
+// public:
 	quad_tree();
 	quad_tree(int n);
 	quad_tree(quad_tree const &Q);
@@ -176,6 +177,26 @@ void quad_tree::set(int x1, int y1, int x2, int y2, int b)
 		this->se->set(coords[2][0], coords[2][2], coords[2][1], coords[2][3], b);
 	if (swact)
 		this->sw->set(coords[3][0], coords[3][2], coords[3][1], coords[3][3], b);
+
+	// Tree compression subroutine !
+	// std::cout << "too many checks" << std::endl;
+	if (this->nw->nw == nullptr && this->ne->nw == nullptr
+	        && this->se->nw == nullptr && this->sw->nw == nullptr)
+	{
+		if (this->nw->data == this->ne->data && this->ne->data == this->se->data
+		        && this->se->data == this->sw->data)
+		{
+			this->data = this->nw->data;
+			this->nw->~quad_tree();
+			this->ne->~quad_tree();
+			this->se->~quad_tree();
+			this->sw->~quad_tree();
+			this->nw = nullptr;
+			this->ne = nullptr;
+			this->se = nullptr;
+			this->sw = nullptr;
+		}
+	}
 }
 
 int quad_tree::size() const
@@ -241,6 +262,26 @@ void quad_tree::overlap(quad_tree const &Q)
 	this->ne->overlap(*(Q.ne));
 	this->se->overlap(*(Q.se));
 	this->sw->overlap(*(Q.sw));
+
+	// Tree compression subroutine !
+	// std::cout << "too many checks" << std::endl;
+	if (this->nw->nw == nullptr && this->ne->nw == nullptr
+	        && this->se->nw == nullptr && this->sw->nw == nullptr)
+	{
+		if (this->nw->data == this->ne->data && this->ne->data == this->se->data
+		        && this->se->data == this->sw->data)
+		{
+			this->data = this->nw->data;
+			this->nw->~quad_tree();
+			this->ne->~quad_tree();
+			this->se->~quad_tree();
+			this->sw->~quad_tree();
+			this->nw = nullptr;
+			this->ne = nullptr;
+			this->se = nullptr;
+			this->sw = nullptr;
+		}
+	}
 }
 
 void quad_tree::intersect(quad_tree &Q)
@@ -276,6 +317,26 @@ void quad_tree::intersect(quad_tree &Q)
 	this->ne->intersect(*(Q.ne));
 	this->se->intersect(*(Q.se));
 	this->sw->intersect(*(Q.sw));
+
+	// Tree compression subroutine !
+	// std::cout << "too many checks" << std::endl;
+	if (this->nw->nw == nullptr && this->ne->nw == nullptr
+	        && this->se->nw == nullptr && this->sw->nw == nullptr)
+	{
+		if (this->nw->data == this->ne->data && this->ne->data == this->se->data
+		        && this->se->data == this->sw->data)
+		{
+			this->data = this->nw->data;
+			this->nw->~quad_tree();
+			this->ne->~quad_tree();
+			this->se->~quad_tree();
+			this->sw->~quad_tree();
+			this->nw = nullptr;
+			this->ne = nullptr;
+			this->se = nullptr;
+			this->sw = nullptr;
+		}
+	}
 }
 
 void quad_tree::complement()
