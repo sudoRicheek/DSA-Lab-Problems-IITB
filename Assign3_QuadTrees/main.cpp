@@ -1,41 +1,113 @@
+#include<bits/stdc++.h>
 #include "Assign3.h"
-#include <iostream>
+#include<chrono>
+
 using namespace std;
 
-int main(int argc, char const *argv[])
-{
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL);
-
-	int n = 3;
-	int x1, y1, x2, y2;
-	cin >> x1 >> x2 >> y1 >> y2;
-	quad_tree qq(n);
-	qq.set(x1, y1, x2, y2, 1);
-
-	quad_tree qq1(n);
-	qq1.set(2, 3, 5, 7, 1);
-
-	// quad_tree *qq2 = new quad_tree(qq);
-
-	// qq.intersect(qq1);
-	qq.complement();
-	qq.set(0, 0, 3, 3, 0);
-	qq.set(2, 3, 7, 6, 1);
-
-	// cout << qq.get(1, 1) << endl;
-	for (int i = 0; i < (1 << n); ++i) {
-		for (int j = 0; j < (1 << n); ++j)
-			cout << qq.get(i, j) << " " << flush;
-		cout << endl;
-	}
-	// cout << qq.countones() << endl;
-	// qq.resize(2);
-	// for (int i = 0; i < (1 << 2); ++i) {
-	// 	for (int j = 0; j < (1 << 2); ++j)
-	// 		cout << qq.get(i, j) << " " << flush;
-	// 	cout << endl;
-	// }
-
-	return 0;
+int main() {
+    int n;
+    cin >> n;
+    vector<quad_tree> Q (2,quad_tree(n));
+    // quad_tree* Q[2];
+    // Q[0] = new quad_tree(n);
+    // Q[1] = new quad_tree(n);
+    int t;
+    int count = 0;
+    cin >> t;
+    double setduration = 0, getduration = 0, orduration = 0, andduration = 0, complementduration = 0, resizeduration = 0, extractduration = 0;
+    while(t--) {
+        char c;
+        cin >> c;
+        switch(c) {
+            case 'S':
+            {   
+                int id;
+                int x1,y1,x2,y2;
+                bool b;
+                cin >> id >> x1 >> y1 >> x2 >> y2 >> b;
+                auto t1 = chrono::high_resolution_clock::now();
+                Q[id].set(x1,y1,x2,y2,b);
+                auto t2 = chrono::high_resolution_clock::now();
+                setduration += chrono::duration_cast<std::chrono::microseconds>(t2-t1).count();
+                // cout << "S" << count++ << endl;
+                break;
+            }
+            case 'G':
+            {
+                int x,y,id;
+                cin >> id >> x >> y;
+                auto t1 = chrono::high_resolution_clock::now();
+                cout << Q[id].get(x,y) << "\n";
+                auto t2 = chrono::high_resolution_clock::now();
+                getduration += chrono::duration_cast<std::chrono::microseconds>(t2-t1).count();
+                // cout << "G" << count++ << endl;
+                break;
+            }
+            case 'O':
+            {
+                int id;
+                cin >> id;
+                auto t1 = chrono::high_resolution_clock::now();
+                Q[id].overlap(Q[(id+1)%2]);
+                auto t2 = chrono::high_resolution_clock::now();
+                orduration += chrono::duration_cast<std::chrono::microseconds>(t2-t1).count();
+                // cout << "O" << count++ << endl;
+                break;
+            }
+            case 'I':
+            {
+                int id;
+                cin >> id;
+                auto t1 = chrono::high_resolution_clock::now();
+                Q[id].intersect(Q[(id+1)%2]);
+                auto t2 = chrono::high_resolution_clock::now();
+                andduration += chrono::duration_cast<std::chrono::microseconds>(t2-t1).count();
+                // cout << "I" << count++ << endl;
+                break;
+            }
+            case 'C':
+            {
+                int id;
+                cin >> id;
+                auto t1 = chrono::high_resolution_clock::now();
+                Q[id].complement();
+                auto t2 = chrono::high_resolution_clock::now();
+                complementduration += chrono::duration_cast<std::chrono::microseconds>(t2-t1).count();
+                // cout << "C" << count++ << endl;
+                break;
+            }
+            case 'R':
+            {
+                int m;
+                cin >> m;
+                auto t1 = chrono::high_resolution_clock::now();
+                Q[0].resize(m);
+                Q[1].resize(m);
+                auto t2 = chrono::high_resolution_clock::now();
+                resizeduration += chrono::duration_cast<std::chrono::microseconds>(t2-t1).count();
+                // cout << "R" << count++ << endl;
+                break;
+            }
+            case 'E':
+            {
+                int x,y,m;
+                cin >> x >> y >> m;
+                // cout << "E" << count++ << endl;
+                // auto t1 = chrono::high_resolution_clock::now();
+                // Q[0].extract(x,y,m);
+                // Q[1].extract(x,y,m);
+                // auto t2 = chrono::high_resolution_clock::now();
+                // extractduration += chrono::duration_cast<std::chrono::microseconds>(t2-t1).count();
+                break;
+            }
+        }
+    }
+    cout << "Completion" << endl;
+    cout << setduration << endl;
+    cout << getduration << endl;
+    cout << orduration << endl;
+    cout << andduration << endl;
+    cout << complementduration << endl;
+    cout << resizeduration << endl;
+    cout << extractduration << endl;
 }
