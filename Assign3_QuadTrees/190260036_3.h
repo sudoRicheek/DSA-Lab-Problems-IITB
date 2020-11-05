@@ -12,7 +12,6 @@ class quad_tree
 	// size of matrix
 	int sizen;
 
-	// -1 for non-leaf node
 	// 0 for white
 	// 1 for black
 	int data;
@@ -24,6 +23,8 @@ class quad_tree
 	quad_tree *sw;
 
 	lli countones() const;
+	quad_tree* ext(int x1, int y1, int m);
+
 public:
 	quad_tree();
 	quad_tree(int n);
@@ -423,9 +424,126 @@ void quad_tree::resize(int m)
 	}
 }
 
+quad_tree* quad_tree::ext(int x1, int y1, int m)
+{
+	if (this->nw == nullptr) {
+		quad_tree *tempret = new quad_tree(m);
+		tempret->data = this->data;
+		return tempret;
+	}
+
+	if (m == this->sizen) {
+		quad_tree *tempret = new quad_tree(m);
+		tempret->data = this->data;
+		tempret->nw = this->nw;
+		tempret->ne = this->ne;
+		tempret->se = this->se;
+		tempret->sw = this->sw;
+		this->nw = nullptr;
+		this->ne = nullptr;
+		this->se = nullptr;
+		this->sw = nullptr;
+		return tempret;
+	}
+
+	int len = (1 << m);
+	int midd = len / 2;
+	int thislen = (1 << this->sizen);
+	int thismidd = thislen / 2;
+
+	if ((x1 + len <= thismidd) && (y1 + len <= thismidd))	{
+		//nw
+		return this->nw->ext(x1, y1, m);
+	}
+	else if ((x1 + len <= thismidd) && (y1 >= thismidd))	{
+		//ne
+		return this->ne->ext(x1, y1 - thismidd, m);
+	}
+	else if ((x1 >= thismidd) && (y1 >= thismidd))	{
+		//se
+		return this->se->ext(x1 - thismidd, y1 - thismidd, m);
+	}
+	else if ((x1 >= thismidd) && (y1 + len <= thismidd))	{
+		//sw
+		return this->sw->ext(x1 - thismidd, y1, m);
+	}
+	else {
+		quad_tree *ret = new quad_tree(m);
+		ret->nw = this->ext(x1, y1, m - 1);
+		ret->ne = this->ext(x1, y1 + midd, m - 1);
+		ret->se = this->ext(x1 + midd, y1 + midd, m - 1);
+		ret->sw = this->ext(x1 + midd, y1, m - 1);
+
+		// Tree compression subroutine
+		if (ret->nw->nw == nullptr && ret->ne->nw == nullptr
+		        && ret->se->nw == nullptr && ret->sw->nw == nullptr)
+		{
+			if (ret->nw->data == ret->ne->data && ret->ne->data == ret->se->data
+			        && ret->se->data == ret->sw->data)
+			{
+				ret->data = ret->nw->data;
+				delete ret->nw;
+				delete ret->ne;
+				delete ret->se;
+				delete ret->sw;
+				ret->nw = nullptr;
+				ret->ne = nullptr;
+				ret->se = nullptr;
+				ret->sw = nullptr;
+			}
+		}
+		return ret;
+	}
+}
+
 void quad_tree::extract(int x1, int y1, int m)
 {
+	if (m == 0)
+	{
+		this->data = this->get(x1, y1);
+		delete this->nw;
+		delete this->ne;
+		delete this->se;
+		delete this->sw;
+		this->nw = nullptr;
+		this->ne = nullptr;
+		this->se = nullptr;
+		this->sw = nullptr;
+		this->sizen = 0;
+		return;
+	}
+	int midd = (1 << (m - 1));
+	quad_tree *nw = this->ext(x1, y1, m - 1);
+	quad_tree *ne = this->ext(x1, y1 + midd, m - 1);
+	quad_tree *se = this->ext(x1 + midd, y1 + midd, m - 1);
+	quad_tree *sw = this->ext(x1 + midd, y1, m - 1);
+	delete this->nw;
+	delete this->ne;
+	delete this->se;
+	delete this->sw;
+	this->sizen = m;
+	this->nw = nw;
+	this->ne = ne;
+	this->se = se;
+	this->sw = sw;
 
+	if (this->nw->nw == nullptr && this->ne->nw == nullptr
+	        && this->se->nw == nullptr && this->sw->nw == nullptr)
+	{
+		if (this->nw->data == this->ne->data && this->ne->data == this->se->data
+		        && this->se->data == this->sw->data)
+		{
+			this->data = this->nw->data;
+			delete this->nw;
+			delete this->ne;
+			delete this->se;
+			delete this->sw;
+			this->nw = nullptr;
+			this->ne = nullptr;
+			this->se = nullptr;
+			this->sw = nullptr;
+		}
+	}
 }
 
 #endif
