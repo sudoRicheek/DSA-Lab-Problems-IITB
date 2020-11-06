@@ -10,6 +10,15 @@
 
 class quad_tree
 {
+//
+	//
+	//
+	//
+	//
+	//
+	// ***************************************
+	// REMEMBER TO REMOVE THIS !!!!!!!!!!!
+	//
 public:
 	// size of matrix
 	int sizen;
@@ -77,10 +86,16 @@ quad_tree::quad_tree(quad_tree const &Q)
 
 quad_tree::~quad_tree()
 {
-	if (this != nullptr) {
+	if (this->nw != nullptr) {
 		delete this->nw;
+	}
+	if (this->ne != nullptr) {
 		delete this->ne;
+	}
+	if (this->se != nullptr) {
 		delete this->se;
+	}
+	if (this->sw != nullptr) {
 		delete this->sw;
 	}
 }
@@ -96,10 +111,14 @@ void quad_tree::set(int x1, int y1, int x2, int y2, int b)
 	if ((x1 == 0) && (x2 == len - 1) && (y1 == 0) && (y2 == len - 1)) {
 		this->data = b;
 		if (this->nw != nullptr) {
-			this->nw->~quad_tree();
-			this->ne->~quad_tree();
-			this->se->~quad_tree();
-			this->sw->~quad_tree();
+			delete this->nw;
+			delete this->ne;
+			delete this->se;
+			delete this->sw;
+			// this->nw->~quad_tree();
+			// this->ne->~quad_tree();
+			// this->se->~quad_tree();
+			// this->sw->~quad_tree();
 			this->nw = nullptr;
 			this->ne = nullptr;
 			this->se = nullptr;
@@ -187,10 +206,14 @@ void quad_tree::set(int x1, int y1, int x2, int y2, int b)
 		        && this->se->data == this->sw->data)
 		{
 			this->data = this->nw->data;
-			this->nw->~quad_tree();
-			this->ne->~quad_tree();
-			this->se->~quad_tree();
-			this->sw->~quad_tree();
+			delete this->nw;
+			delete this->ne;
+			delete this->se;
+			delete this->sw;
+			// this->nw->~quad_tree();
+			// this->ne->~quad_tree();
+			// this->se->~quad_tree();
+			// this->sw->~quad_tree();
 			this->nw = nullptr;
 			this->ne = nullptr;
 			this->se = nullptr;
@@ -237,10 +260,14 @@ void quad_tree::overlap(quad_tree const &Q)
 	}
 	if (Q.nw == nullptr) {
 		if (Q.data == 1) {
-			this->nw->~quad_tree();
-			this->ne->~quad_tree();
-			this->se->~quad_tree();
-			this->sw->~quad_tree();
+			delete this->nw;
+			delete this->ne;
+			delete this->se;
+			delete this->sw;
+			// this->nw->~quad_tree();
+			// this->ne->~quad_tree();
+			// this->se->~quad_tree();
+			// this->sw->~quad_tree();
 			this->nw = nullptr;
 			this->ne = nullptr;
 			this->se = nullptr;
@@ -272,10 +299,14 @@ void quad_tree::overlap(quad_tree const &Q)
 		        && this->se->data == this->sw->data)
 		{
 			this->data = this->nw->data;
-			this->nw->~quad_tree();
-			this->ne->~quad_tree();
-			this->se->~quad_tree();
-			this->sw->~quad_tree();
+			delete this->nw;
+			delete this->ne;
+			delete this->se;
+			delete this->sw;
+			// this->nw->~quad_tree();
+			// this->ne->~quad_tree();
+			// this->se->~quad_tree();
+			// this->sw->~quad_tree();
 			this->nw = nullptr;
 			this->ne = nullptr;
 			this->se = nullptr;
@@ -292,10 +323,14 @@ void quad_tree::intersect(quad_tree &Q)
 	}
 	if (Q.nw == nullptr) {
 		if (Q.data == 0) {
-			this->nw->~quad_tree();
-			this->ne->~quad_tree();
-			this->se->~quad_tree();
-			this->sw->~quad_tree();
+			delete this->nw;
+			delete this->ne;
+			delete this->se;
+			delete this->sw;
+			// this->nw->~quad_tree();
+			// this->ne->~quad_tree();
+			// this->se->~quad_tree();
+			// this->sw->~quad_tree();
 			this->nw = nullptr;
 			this->ne = nullptr;
 			this->se = nullptr;
@@ -327,10 +362,14 @@ void quad_tree::intersect(quad_tree &Q)
 		        && this->se->data == this->sw->data)
 		{
 			this->data = this->nw->data;
-			this->nw->~quad_tree();
-			this->ne->~quad_tree();
-			this->se->~quad_tree();
-			this->sw->~quad_tree();
+			delete this->nw;
+			delete this->ne;
+			delete this->se;
+			delete this->sw;
+			// this->nw->~quad_tree();
+			// this->ne->~quad_tree();
+			// this->se->~quad_tree();
+			// this->sw->~quad_tree();
 			this->nw = nullptr;
 			this->ne = nullptr;
 			this->se = nullptr;
@@ -366,6 +405,11 @@ int quad_tree::countones() const
 
 void quad_tree::resize(int m)
 {
+	// for (int i = 0; i < (1 << this->size()); ++i) {
+	// 	for (int j = 0; j < (1 << this->size()); ++j)
+	// 		std::cout << this->get(i, j) << " ";
+	// 	std::cout << std::endl;
+	// }
 	if (m > this->size()) {
 		this->sizen = m;
 		if (this->nw == nullptr)
@@ -385,10 +429,14 @@ void quad_tree::resize(int m)
 			else
 				this->data = 0;
 			this->sizen = m;
-			this->nw->~quad_tree();
-			this->ne->~quad_tree();
-			this->se->~quad_tree();
-			this->sw->~quad_tree();
+			delete this->nw;
+			delete this->ne;
+			delete this->se;
+			delete this->sw;
+			// this->nw->~quad_tree();
+			// this->ne->~quad_tree();
+			// this->se->~quad_tree();
+			// this->sw->~quad_tree();
 			this->nw = nullptr;
 			this->ne = nullptr;
 			this->se = nullptr;
@@ -405,6 +453,30 @@ void quad_tree::resize(int m)
 	}
 	else
 		return;
+
+	// Tree compression subroutine !
+	// std::cout << "too many checks" << std::endl;
+	if (this->nw->nw == nullptr && this->ne->nw == nullptr
+	        && this->se->nw == nullptr && this->sw->nw == nullptr)
+	{
+		if (this->nw->data == this->ne->data && this->ne->data == this->se->data
+		        && this->se->data == this->sw->data)
+		{
+			this->data = this->nw->data;
+			delete this->nw;
+			delete this->ne;
+			delete this->se;
+			delete this->sw;
+			// this->nw->~quad_tree();
+			// this->ne->~quad_tree();
+			// this->se->~quad_tree();
+			// this->sw->~quad_tree();
+			this->nw = nullptr;
+			this->ne = nullptr;
+			this->se = nullptr;
+			this->sw = nullptr;
+		}
+	}
 }
 
 void quad_tree::extract(int x1, int y1, int m)
